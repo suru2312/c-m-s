@@ -33,8 +33,12 @@ def pause():
 
 def login():
     print_header("LOGIN PAGE")
-    person_id = input("Enter ID         : ")
-    password = input("Enter Password   : ")
+    person_id = input("Enter ID         : ").strip().upper()
+    password = input("Enter Password   : ").strip()
+    if not person_id:
+        raise InvalidInput("ID cannot be empty.")
+    if not password:
+        raise InvalidInput("Password cannot be empty.")
     return authenticate(person_id, password)
 
 def authenticate(person_id, password):
@@ -62,6 +66,8 @@ def authenticate(person_id, password):
 
 def get_student():
     student_id = input("Enter Student ID : ").strip().upper()
+    if not student_id:
+        raise InvalidInput("Student ID cannot be empty.")
     student = students.get(student_id)
     if not student:
         print("\nStudent Not Found!")
@@ -192,7 +198,10 @@ def admin_dashboard(admin):
         user_choice = input("Enter Choice : ")
         print()
         if user_choice == "1":
-            admin.add_student(students)
+            try:
+                admin.add_student(students)
+            except (InvalidAgeError, InvalidMobileError, InvalidInput) as e:
+                print(e)
             pause()
         elif user_choice == "2":
             try:
@@ -204,7 +213,10 @@ def admin_dashboard(admin):
             admin.delete_student(students)
             pause()
         elif user_choice == "4":
-            admin.search_student(students)
+            try:
+                admin.search_student(students)
+            except InvalidInput as e:
+                print(e)
             pause()
         elif user_choice == "5":
             admin.view_students(students)
@@ -247,10 +259,63 @@ def admin_dashboard(admin):
 #================================ PRINCIPAL DASHBOARD ========================
 
 def principal_dashboard(principal):
-    clear_screen()
-    print_header("PRINCIPAL DASHBOARD")
-    print(f"\nWelcome {principal.name}")
-    pause()
+    while True:
+        print_header("PRINCIPAL DASHBOARD")
+        print(f"\nWelcome {principal.name}")
+        print()
+        print("1. Top 3 Students            2. Highest Percentage")
+        print("3. Average Percentage        4. Pass/Fail Report")
+        print("5. Highest Attendance        6. Average Attendance")
+        print("7. Pending Fee Students      8. College Summary")
+        print("9. Change Password           10. Logout")
+        print()
+        user_choice = input("Enter Choice : ")
+        if user_choice == "1":
+            principal.top_three_students(students)
+            pause()
+        elif user_choice == "2":
+            principal.highest_percentage(students)
+            pause()
+        elif user_choice == "3":
+            principal.average_percentage(students)
+            pause()
+        elif user_choice == "4":
+            principal.pass_fail_report(students)
+            pause()
+        elif user_choice == "5":
+            try:
+                principal.highest_attendance(students)
+            except InvalidAttendanceError as e:
+                print(e)
+            pause()
+        elif user_choice == "6":
+            try:
+                principal.average_attendance(students)
+            except InvalidAttendanceError as e:
+                print(e)
+            pause()
+        elif user_choice == "7":
+            principal.pending_fee_students(students)
+            pause()
+        elif user_choice == "8":
+            principal.college_summary(students, teachers, admins)
+            pause()
+        elif user_choice == "9":
+            print()
+            old_password = input("Enter Old Password : ")
+            new_password = input("Enter New Password : ")
+            try:
+                principal.change_password(old_password, new_password)
+            except InvalidInput as e:
+                print(e)
+            pause()
+        elif user_choice == "10":
+            principal.logout()
+            pause()
+            break
+        else:
+            print("\nInvalid Choice!")
+            pause()
 
 #================================ MAIN =======================================
 
@@ -261,7 +326,12 @@ def main():
         welcome_screen()
         pause()
 
-        user = login()
+        try:
+            user = login()
+        except InvalidInput as e:
+            print(e)
+            pause()
+            continue
 
         if user:
             if isinstance(user, Student):
