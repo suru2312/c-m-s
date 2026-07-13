@@ -1,4 +1,4 @@
-students = []
-teachers = []
-admins = []
-principals = []
+students = {}
+teachers = {}
+admins = {}
+principal = None

@@ -1,20 +1,58 @@
+#======================================= IMPORTS ======================================
+
+from prettytable import PrettyTable
+from exceptions import (
+    InvalidAgeError, 
+    InvalidMobileError,
+    InvalidAttendanceError,
+    InvalidSubjectMarksError,
+    InvalidInput
+)
+
+#====================================== CONSTANTS ======================================
 
 MIN_MARKS = 0
 MAX_MARKS = 100
+MIN_AGE = 18
+MAX_ATTENDANCE = 100
+MIN_ATTENDANCE = 0
+
+#======================================== PERSON =======================================
 
 class Person:
+
+    #---------------------- CONSTRUCTOR ---------------------------
     
-    def __init__(self, person_id, name, age, gender, mobile):
+    def __init__(self, person_id, name, age, gender, mobile, password):
         self.person_id = person_id
         self.name = name
-        if age < 18:
-            raise Exception("Age must be greater than 18.")
+        if age < MIN_AGE:
+            raise InvalidAgeError(f"Age must be at least {MIN_AGE}.")
         self.age = age
         self.gender = gender
         if not Person.validate_mobile(mobile):
-            raise Exception("Invalid Mobile Number.")
+            raise InvalidMobileError("Invalid Mobile Number.")
         self.mobile = mobile
+        if not password:
+            raise InvalidInput("Password Cannot be Empty!")
+        self.__password = password
     
+    #---------------------- NORMAL METHODS ---------------------------
+
+    def check_password(self, password):
+        return self.__password == password
+
+    def change_password(self, old_password, new_password):
+        if not self.check_password(old_password):
+            raise InvalidInput("Old Password is Incorrect!")
+        if not new_password:
+            raise InvalidInput("New Password Cannot be Empty!")
+        self.__password = new_password
+        print("Password Changed Successfully!")
+    
+    def verify_login(self, person_id, password):
+        return (self.person_id == person_id and self.check_password(password))
+
     def login(self):
         print(f"{self.name} logged In Successfully!")
     
@@ -29,24 +67,30 @@ class Person:
         print(f"GENDER           : {self.gender}")
         print(f"MOBILE           : {self.mobile}")
     
-    #--------------STATIC METHOD------------------
+    #---------------------- STATIC METHOD ---------------------------
     
     @staticmethod
     def validate_mobile(mobile):
-        if len(mobile) == 10 and mobile.isdigit():
-            return True
+        mobile_str = str(mobile)
+        if len(mobile_str) == 10:
+            if not mobile_str.isdigit():
+                return False
+            if mobile_str.startswith(("6", "7", "8", "9")):
+                return True
         return False
+
+#======================================== STUDENT ========================================
 
 class Student(Person):
     
     total_students = 0
     
-    # ---------------- Constructor ---------------- #
+    #---------------------- CONSTRUCTOR ---------------------------
     
-    def __init__(self, person_id, name, age, gender, mobile,
+    def __init__(self, person_id, name, age, gender, mobile, password,
                 course, semester):
         
-        super().__init__(person_id, name, age, gender, mobile)
+        super().__init__(person_id, name, age, gender, mobile, password)
         
         self.course = course
         self.semester = semester
@@ -62,33 +106,87 @@ class Student(Person):
         
         Student.total_students += 1
     
-    # ---------------- Normal Methods ---------------- #
+    #---------------------- NORMAL METHODS ---------------------------
     
     def display(self):
         super().display()
         print(f"COURSE           : {self.course}")
         print(f"SEMESTER         : {self.semester}")
+        print(f"FEE STATUS       : {'PAID' if self.fee['paid'] else 'PENDING'}")
 
     def calculate_percentage(self):
-        pass
+        if not self.subject_marks:
+            return 0
+        percentage = round(sum(self.subject_marks.values()) / len(self.subject_marks), 2)
+        return percentage 
     
     def calculate_grade(self):
-        pass
+        percentage = self.calculate_percentage()
+
+        if percentage >= 90:
+            return "A+"
+        elif percentage >= 80:
+            return "A"
+        elif percentage >= 70:
+            return "B"
+        elif percentage >= 60:
+            return "C"
+        elif percentage >= 50:
+            return "D"
+        else:
+            return "F"
     
     def calculate_attendance(self):
-        pass
+        present = self.attendance["present"]
+        total = self.attendance["total_classes"]
+        if total == 0:
+            raise InvalidAttendanceError("There were no classes till now.")
+        absent = total - present
+        percentage = round((present / total) * 100, 2)
+        return present, absent, total, percentage
     
     def view_result(self):
-        pass
+        if not self.subject_marks:
+            print("No Marks Assigned Yet!")
+            return
+        
+        total_marks = sum(self.subject_marks.values())
+        maximum_marks = len(self.subject_marks) * 100
+        percentage = self.calculate_percentage()
+        grade = self.calculate_grade()
+        
+        if grade == "F":
+            result = "FAIL"
+        else:
+            result = "PASS"
+        
+        table = PrettyTable()
+        table.align = "l"
+        table.field_names = ["Subject", "Marks"]
+        for subject, marks in self.subject_marks.items():
+            table.add_row([subject, marks])
+        
+        print("\n" + "=" * 50)
+        print("RESULT".center(50))
+        print("=" * 50)
+        
+        print(table)
+        
+        print("-"*50)
+        
+        print(f"Total Marks      : {total_marks} / {maximum_marks}")
+        print(f"Percentage       : {percentage} %")
+        print(f"Grade            : {grade}")
+        print(f"Result           : {result}")
     
     def pay_fee(self):
-        pass
+        if self.fee["paid"]:
+            print("\nFee has already been paid.")
+        else:
+            self.fee["paid"] = True
+            print(f'\n₹{self.fee["amount"]} fee paid successfully!')
     
-    #--------------STATIC METHOD------------------
-    
-    
-    
-    #--------------PROPERTY------------------
+    #---------------------- PROPERTY METHODS ---------------------------
     
     @property
     def subject_marks(self):
@@ -97,97 +195,383 @@ class Student(Person):
     @subject_marks.setter
     def subject_marks(self, value):
         if not isinstance(value, dict):
-            raise Exception("Subject marks must be a dictionary.")
+            raise InvalidSubjectMarksError("Subject marks must be a dictionary.")
         for subject, marks in value.items():
             if not (MIN_MARKS <= marks <= MAX_MARKS):
-                raise Exception(f"{subject} marks must be between {MIN_MARKS} and {MAX_MARKS}")
+                raise InvalidSubjectMarksError(f"{subject} marks must be between {MIN_MARKS} and {MAX_MARKS}")
         self.__subject_marks = value
     
-    #--------------MAGIC METHODS------------------
+    #---------------------- CLASS METHODS ---------------------------
+
+    @classmethod
+    def from_string(cls, student_string):
+        data = student_string.split(",")
+        return cls(
+            data[0],
+            data[1],
+            int(data[2]),
+            data[3],
+            data[4],
+            data[5],
+            int(data[6])
+        )
     
-    # def __str__(self):
-    #     return super().__str__()
+    #---------------------- MAGIC METHODS ---------------------------
     
-    # def __len__(self):
-    #     pass
-    
-    # def __eq__(self, value):
-    #     return super().__eq__(value)
+    def __str__(self):
+        return (
+            f"Student(ID={self.person_id}, "
+            f"Name={self.name}, "
+            f"Course={self.course}, "
+            f"Semester={self.semester})"
+        )
+        
+    def __len__(self):
+        return len(self.subject_marks)
+
+#======================================== TEACHER ========================================
 
 class Teacher(Person):
     
     total_teachers = 0
     
-    # ---------------- Constructor ---------------- #
+    #---------------------- CONSTRUCTOR ---------------------------
     
-    def __init__(self, person_id, name, age, gender, mobile,
+    def __init__(self, person_id, name, age, gender, mobile, password,
                 subject, salary):
         
-        super().__init__(person_id, name, age, gender, mobile)
+        super().__init__(person_id, name, age, gender, mobile, password)
         
         self.subject = subject
-        self.__salary = salary
+        self.salary = salary
         
         Teacher.total_teachers += 1
     
-    # ---------------- Normal Methods ---------------- #
+    #---------------------- NORMAL METHODS ---------------------------
     
     def display(self):
         super().display()
         print(f"SUBJECT          : {self.subject}")
         print(f"SALARY           : {self.salary}")
     
-    def add_marks(self):
-        pass
+    def add_marks(self, student):
+        print(f"\nAdding marks for {student.name}")
+        subject = input("Enter Subject : ").strip().title()
+        try:
+            marks = int(input("Enter Marks   : "))
+        except ValueError:
+            raise InvalidInput("Marks must be a number.")
+        if not (MIN_MARKS <= marks <= MAX_MARKS):
+            raise InvalidSubjectMarksError(
+                f"Marks must be between {MIN_MARKS} and {MAX_MARKS}."
+            )
+        student.subject_marks[subject] = marks
+        print(f"\n{subject} marks added successfully for {student.name}.")
     
-    def update_marks(self):
-        pass
+    def update_marks(self, student):
+        print(f"\nUpdating marks for {student.name}")
+        subject = input("Enter Subject : ").strip().title()
+        if subject not in student.subject_marks:
+            raise InvalidSubjectMarksError(
+                f"{subject} marks not found."
+            )
+        try:
+            marks = int(input("Enter Marks   : "))
+        except ValueError:
+            raise InvalidInput("Marks must be a number.")
+        if not (MIN_MARKS <= marks <= MAX_MARKS):
+            raise InvalidSubjectMarksError(
+                f"Marks must be between {MIN_MARKS} and {MAX_MARKS}."
+            )
+        student.subject_marks[subject] = marks
+        print(f"\n{subject} marks updated successfully for {student.name}.")
     
-    def take_attendance(self):
-        pass
-    
-    #--------------PROPERTY METHOD------------------
-    
+    def take_attendance(self, student):
+        print(f"\nAttendance for {student.name}")
+        choice = input("Present (Y/N): ").strip().upper()
+        if choice not in ("Y", "N"):
+            raise InvalidInput("Enter Y or N only.")
+        student.attendance["total_classes"] += 1
+        if choice == "Y":
+            student.attendance["present"] += 1
+            
+    #---------------------- PROPERTY METHODS ---------------------------
+
     @property
     def salary(self):
         return self.__salary
     
     @salary.setter
     def salary(self, value):
-        pass
+        if value <= 0:
+            raise InvalidInput("Salary must be greater than 0.")
+        self.__salary = value
+
+#======================================== ADMIN ========================================
 
 class Admin(Person):
     
     total_admin = 0
+
+    #---------------------- CONSTRUCTOR ---------------------------
     
-    def __init__(self, person_id, name, age, gender, mobile):
+    def __init__(self, person_id, name, age, gender, mobile, password):
         
-        super().__init__(person_id, name, age, gender, mobile)
+        super().__init__(person_id, name, age, gender, mobile, password)
         
         Admin.total_admin += 1
     
-    def add_student(self):
-        pass
+    #---------------------- NORMAL METHODS ---------------------------
     
-    def delete_student(self):
-        pass
-    
-    def search_student(self, *args):
-        pass
-    
-    def add_teacher(self):
-        pass
-    
-    def view_students(self):
-        pass
-    
-    def view_teachers(self):
-        pass
+    def view_students(self, students):
+        if not students:
+            print("\nNo Students Found!")
+            return
+        table = PrettyTable()
+        table.align = "l"
+        table.field_names = [
+            "ID",
+            "Name",
+            "Course",
+            "Semester",
+            "Attendance",
+            "Fee Status"
+        ]
+        for student in students.values():
+            fee_status = "Paid" if student.fee["paid"] else "Pending"
+            table.add_row([
+                student.person_id,
+                student.name,
+                student.course,
+                student.semester,
+                f"{student.calculate_attendance()[3]}%"
+                if student.attendance["total_classes"] > 0 else "N/A",
+                fee_status
+            ])
+        print("\n" + "=" * 80)
+        print("STUDENT LIST".center(80))
+        print("=" * 80)
+        print(table)
+
+    def view_teachers(self, teachers):
+        if not teachers:
+            print("\nNo Teachers Found!")
+            return
+        table = PrettyTable()
+        table.align = "l"
+        table.field_names = [
+            "ID",
+            "Name",
+            "Subject",
+            "Salary"
+        ]
+        for teacher in teachers.values():
+            table.add_row([
+                teacher.person_id,
+                teacher.name,
+                teacher.subject,
+                teacher.salary
+            ])
+        print("\n" + "=" * 80)
+        print("TEACHER LIST".center(80))
+        print("=" * 80)
+        print(table)
+
+    def search_student(self, students):
+        if not students:
+            print("\nNo Students Found!")
+            return
+        keyword = input("Enter Student ID or Name : ").strip()
+        for student in students.values():
+            if (
+                student.person_id.upper() == keyword.upper()
+                or student.name.lower() == keyword.lower()
+            ):
+                print("\nStudent Found!\n")
+                student.display()
+                return
+        print("\nStudent Not Found!")
+
+    def add_student(self, students):
+        print("\nEnter Student Details")
+        print()
+        name = input("Name       : ").strip()
+        try:
+            age = int(input("Age        : "))
+        except InvalidAgeError:
+            print("Age must atleast be above 18 and Numeric.")
+        gender = input("Gender     : ").strip().title()
+        mobile = input("Mobile     : ").strip()
+        password = input("Password   : ").strip()
+        course = input("Course     : ").strip().upper()
+        try:
+            semester = int(input("Semester   : "))
+        except InvalidInput:
+            print("Semester should be Numeric only.")
+
+        # Generate Student ID
+        if students:
+            last_id = max(int(student_id[1:]) for student_id in students.keys())
+            student_id = f"S{last_id + 1}"
+        else:
+            student_id = "S501"
+
+        try:
+            student = Student(student_id, name, age, gender, mobile,
+                password, course, semester)
+            students[student.person_id] = student
+            print("\nStudent Added Successfully!")
+            print(f"Student ID : {student.person_id}")
+        except (InvalidAgeError, InvalidMobileError, InvalidInput) as e:
+            print(e)
+
+    def add_teacher(self, teachers):
+        print("\nEnter Teacher Details")
+        print()
+        name = input("Name       : ").strip()
+        try:
+            age = int(input("Age        : "))
+        except ValueError:
+            print("Age must be a numeric value.")
+            return
+        gender = input("Gender     : ").strip().title()
+        mobile = input("Mobile     : ").strip()
+        password = input("Password   : ").strip()
+        subject = input("Subject     : ").strip().upper()
+        try:
+            salary = int(input("Salary     : "))
+        except ValueError:
+            print("Salary must be a numeric value.")
+            return
+
+        # Generate Teacher ID
+        if teachers:
+            last_id = max(int(teacher_id[1:]) for teacher_id in teachers.keys())
+            teacher_id = f"T{last_id + 1}"
+        else:
+            teacher_id = "T51"
+
+        try:
+            teacher = Teacher(teacher_id, name, age, gender, mobile,
+                password, subject, salary)
+            teachers[teacher.person_id] = teacher
+            print("\nTeacher Added Successfully!")
+            print(f"Teacher ID : {teacher.person_id}")
+        except (InvalidAgeError, InvalidMobileError, InvalidInput) as e:
+            print(e)
+
+    def update_student(self, students):
+        if not students:
+            print("\nNo Students Found!")
+            return
+        student_id = input("Enter Student ID : ").strip().upper()
+        if student_id not in students:
+            print("\nStudent Not Found!")
+            return
+        student = students[student_id]
+        print("\nLeave blank if you don't want to change a field.\n")
+        name = input(f"Name [{student.name}] : ").strip()
+        if name:
+            student.name = name
+        age = input(f"Age [{student.age}] : ").strip()
+        if age:
+            student.age = int(age)
+        gender = input(f"Gender [{student.gender}] : ").strip().title()
+        if gender:
+            student.gender = gender
+        mobile = input(f"Mobile [{student.mobile}] : ").strip()
+        if mobile:
+            if Person.validate_mobile(mobile):
+                student.mobile = mobile
+            else:
+                raise InvalidMobileError("Invalid Mobile Number.")
+        course = input(f"Course [{student.course}] : ").strip().upper()
+        if course:
+            student.course = course
+        semester = input(f"Semester [{student.semester}] : ").strip()
+        if semester:
+            student.semester = int(semester)
+        print("\nStudent details updated successfully!")
+
+    def update_teacher(self, teachers):
+        if not teachers:
+            print("\nNo Teachers Found!")
+            return
+        teacher_id = input("Enter Teacher ID : ").strip().upper()
+        if teacher_id not in teachers:
+            print("\nTeacher Not Found!")
+            return
+        teacher = teachers[teacher_id]
+        print("\nLeave blank if you don't want to change a field.\n")
+        name = input(f"Name [{teacher.name}] : ").strip()
+        if name:
+            teacher.name = name
+        age = input(f"Age [{teacher.age}] : ").strip()
+        if age:
+            teacher.age = int(age)
+        gender = input(f"Gender [{teacher.gender}] : ").strip().title()
+        if gender:
+            teacher.gender = gender
+        mobile = input(f"Mobile [{teacher.mobile}] : ").strip()
+        if mobile:
+            if Person.validate_mobile(mobile):
+                teacher.mobile = mobile
+            else:
+                raise InvalidMobileError("Invalid Mobile Number.")
+        subject = input(f"Subject [{teacher.subject}] : ").strip().upper()
+        if subject:
+            teacher.subject = subject
+        salary = input(f"Salary [{teacher.salary}] : ").strip()
+        if salary:
+            teacher.salary = int(salary)
+        print("\nTeacher details updated successfully!")
+
+    def delete_student(self, students):
+        if not students:
+            print("\nNo Students Found!")
+            return
+        student_id = input("Enter Student ID : ").strip().upper()
+        if student_id not in students:
+            print("\nStudent Not Found!")
+            return
+        confirm = input(f"Are you sure you want to delete {student_id}? (Y/N): ").strip().upper()
+        if confirm == "Y":
+            del students[student_id]
+            Student.total_students -= 1
+            print("\nStudent deleted successfully!")
+        elif confirm == "N":
+            print("\nDeletion cancelled.")
+        else:
+            print("\nInvalid Choice!")
+
+    def delete_teacher(self, teachers):
+        if not teachers:
+            print("\nNo Teachers Found!")
+            return
+        teacher_id = input("Enter Teacher ID : ").strip().upper()
+        if teacher_id not in teachers:
+            print("\nTeacher Not Found!")
+            return
+        confirm = input(f"Are you sure you want to delete {teacher_id}? (Y/N): ").strip().upper()
+        if confirm == "Y":
+            del teachers[teacher_id]
+            Teacher.total_teachers -= 1
+            print("\nTeacher deleted successfully!")
+        elif confirm == "N":
+            print("\nDeletion cancelled.")
+        else:
+            print("\nInvalid Choice!")
+
+#======================================== PRINCIPAL ========================================
 
 class Principal(Person):
+
+    #---------------------- CONSTRUCTOR ---------------------------
     
-    def __init__(self, person_id, name, age, gender, mobile):
-        super().__init__(person_id, name, age, gender, mobile)
+    def __init__(self, person_id, name, age, gender, mobile, password):
+        super().__init__(person_id, name, age, gender, mobile, password)
+    
+    #---------------------- NORMAL METHODS ---------------------------
     
     def top_three_students(self):
         pass
