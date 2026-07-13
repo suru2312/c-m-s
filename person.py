@@ -41,6 +41,8 @@ class Student(Person):
     
     total_students = 0
     
+    # ---------------- Constructor ---------------- #
+    
     def __init__(self, person_id, name, age, gender, mobile,
                 course, semester):
         
@@ -59,6 +61,8 @@ class Student(Person):
         }
         
         Student.total_students += 1
+    
+    # ---------------- Normal Methods ---------------- #
     
     def display(self):
         super().display()
@@ -84,7 +88,7 @@ class Student(Person):
     
     
     
-    #--------------PROPERTY METHOD------------------
+    #--------------PROPERTY------------------
     
     @property
     def subject_marks(self):
@@ -92,6 +96,8 @@ class Student(Person):
     
     @subject_marks.setter
     def subject_marks(self, value):
+        if not isinstance(value, dict):
+            raise Exception("Subject marks must be a dictionary.")
         for subject, marks in value.items():
             if not (MIN_MARKS <= marks <= MAX_MARKS):
                 raise Exception(f"{subject} marks must be between {MIN_MARKS} and {MAX_MARKS}")
@@ -112,6 +118,8 @@ class Teacher(Person):
     
     total_teachers = 0
     
+    # ---------------- Constructor ---------------- #
+    
     def __init__(self, person_id, name, age, gender, mobile,
                 subject, salary):
         
@@ -121,6 +129,8 @@ class Teacher(Person):
         self.__salary = salary
         
         Teacher.total_teachers += 1
+    
+    # ---------------- Normal Methods ---------------- #
     
     def display(self):
         super().display()
