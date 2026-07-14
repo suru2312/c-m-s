@@ -81,7 +81,7 @@ def load_teachers():
         with open("teachers.json", "r", encoding="utf-8") as file:
             data = json.load(file)
     except json.JSONDecodeError:
-        print("students.json is corrupted.")
+        print("teachers.json is corrupted.")
         return
     for item in data:
         teacher = Teacher(
@@ -120,7 +120,7 @@ def load_admins():
         with open("admins.json", "r", encoding="utf-8") as file:
             data = json.load(file)
     except json.JSONDecodeError:
-        print("students.json is corrupted.")
+        print("admins.json is corrupted.")
         return
     for item in data:
         admin = Admin(
@@ -154,7 +154,7 @@ def load_principal():
         with open("principal.json", "r", encoding="utf-8") as file:
             data = json.load(file)
     except json.JSONDecodeError:
-        print("students.json is corrupted.")
+        print("principal.json is corrupted.")
         return
     database.principal = Principal(
         data["person_id"],
@@ -165,22 +165,50 @@ def load_principal():
         data["password"]
     )
 
-def load_all():
-    if not os.path.exists("students.json"):
-        save_students()
-    load_students()
-    if not os.path.exists("teachers.json"):
-        save_teachers()
-    load_teachers()
-    if not os.path.exists("admins.json"):
-        save_admins()
-    load_admins()
-    if not os.path.exists("principal.json"):
-        save_principal()
-    load_principal()
-
 def save_all():
     save_students()
     save_teachers()
     save_admins()
     save_principal()
+
+def load_all():
+
+    # ===================== STUDENTS =====================
+
+    if os.path.exists("students.json"):
+        load_students()
+    else:
+        print("\nstudents.json not found. Creating new file...")
+        save_students()
+
+    # ===================== TEACHERS =====================
+
+    if os.path.exists("teachers.json"):
+        load_teachers()
+    else:
+        print("\nteachers.json not found. Creating new file...")
+        save_teachers()
+
+    # ===================== ADMINS =====================
+
+    if os.path.exists("admins.json"):
+        load_admins()
+    else:
+        print("\nadmins.json not found. Creating new file...")
+        save_admins()
+
+    # ===================== PRINCIPAL =====================
+
+    if os.path.exists("principal.json"):
+        load_principal()
+    else:
+        print("\nprincipal.json not found. Creating System Principal...")
+        database.principal = Principal(
+            "P0",
+            "System Principal",
+            50,
+            "Male",
+            "9999999998",
+            "admin123"
+        )
+        save_principal()

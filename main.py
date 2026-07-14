@@ -4,7 +4,9 @@ import os
 # import sample_data
 from file_handler import load_all, save_all
 
-from database import students, teachers, admins, principal
+import database
+
+from database import students, teachers, admins
 from person import Person, Student, Teacher, Admin, Principal
 from college import College
 from exceptions import (
@@ -35,6 +37,7 @@ def pause():
     input("\nPress ENTER to Continue...")
 
 def login():
+    load_all()
     print_header("LOGIN PAGE")
     print("[Enter 'QUIT' for Exiting the program.]".center(60))
     person_id = input("Enter ID         : ").strip().upper()
@@ -67,8 +70,8 @@ def authenticate(person_id, password):
             if admin.verify_login(person_id, password):
                 return admin
     elif person_id == "P0":
-        if principal and principal.verify_login(person_id, password):
-            return principal
+        if database.principal and database.principal.verify_login(person_id, password):
+            return database.principal
     return None
 
 def get_student():
@@ -294,7 +297,8 @@ def principal_dashboard(principal):
         print("3. Average Percentage        4. Pass/Fail Report")
         print("5. Highest Attendance        6. Average Attendance")
         print("7. Pending Fee Students      8. College Summary")
-        print("9. Change Password           10. Logout")
+        print("9. Change Password           10. Update Profile")
+        print("11. Create Admin             12. Logout")
         print()
         user_choice = input("Enter Choice : ")
         if user_choice == "1":
@@ -338,6 +342,14 @@ def principal_dashboard(principal):
                 print(e)
             pause()
         elif user_choice == "10":
+            principal.update_profile()
+            save_all()
+            pause()
+        elif user_choice == "11":
+            principal.create_admin(admins)
+            save_all()
+            pause()
+        elif user_choice == "12":
             principal.logout()
             pause()
             break
@@ -353,6 +365,7 @@ def main():
     
     while True:
         welcome_screen()
+        load_all()
         try:
             user = login()
             if user == "EXIT-101":

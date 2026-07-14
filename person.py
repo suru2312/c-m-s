@@ -759,6 +759,67 @@ class Principal(Person):
     
     #---------------------- NORMAL METHODS ---------------------------
     
+    def update_profile(self):
+        print("\nEnter New Details (Press Enter to keep current value)\n")
+        try:
+            name = input(f"Name [{self.name}] : ").strip()
+            if name:
+                self.name = name
+
+            age = input(f"Age [{self.age}] : ").strip()
+            if age:
+                self.age = int(age)
+
+            gender = input(f"Gender [{self.gender}] : ").strip().title()
+            if gender:
+                self.gender = gender
+
+            mobile = input(f"Mobile [{self.mobile}] : ").strip()
+            if mobile:
+                self.mobile = mobile
+
+            print("\nProfile Updated Successfully!")
+        except ValueError:
+            print("Age must be numeric.")
+        except (InvalidAgeError,
+                InvalidMobileError,
+                InvalidInput) as e:
+            print(e)
+    
+    def create_admin(self, admins):
+        print("\nEnter Admin Details\n")
+        name = input("Name       : ").strip()
+        try:
+            age = int(input("Age        : "))
+        except ValueError:
+            print("Age must be numeric.")
+            return
+        gender = input("Gender     : ").strip().title()
+        mobile = input("Mobile     : ").strip()
+        password = input("Password   : ").strip()
+        # Generate Admin ID
+        if admins:
+            last_id = max(int(admin_id[1:]) for admin_id in admins.keys())
+            admin_id = f"A{last_id + 1}"
+        else:
+            admin_id = "A1"
+        try:
+            admin = Admin(
+                admin_id,
+                name,
+                age,
+                gender,
+                mobile,
+                password
+            )
+            admins[admin.person_id] = admin
+            print("\nAdmin Added Successfully!")
+            print(f"Admin ID : {admin.person_id}")
+        except (InvalidAgeError,
+                InvalidMobileError,
+                InvalidInput) as e:
+            print(e)
+
     def highest_percentage(self, students):
         if not students:
             print("\nNo Students Found!")
@@ -900,3 +961,7 @@ class Principal(Person):
         print(f"Fee Collected       : ₹{collected_fee}")
         print(f"Fee Pending         : ₹{pending_fee}")
         print("=" * 60)
+
+#================================= COMPLETED =========================================
+#================================= COMPLETED =========================================
+#================================= COMPLETED =========================================
