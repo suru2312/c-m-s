@@ -1,0 +1,52 @@
+[
+    {
+        "person_id": "T51",
+        "name": "Amit Kumar",
+        "age": 35,
+        "gender": "Male",
+        "mobile": "9988776655",
+        "password": "amit123",
+        "subject": "Python",
+        "salary": 50000
+    },
+    {
+        "person_id": "T52",
+        "name": "Neha Verma",
+        "age": 32,
+        "gender": "Female",
+        "mobile": "9876501234",
+        "password": "neha123",
+        "subject": "Java",
+        "salary": 55000
+    },
+    {
+        "person_id": "T53",
+        "name": "Rajesh Singh",
+        "age": 40,
+        "gender": "Male",
+        "mobile": "9765432109",
+        "password": "rajesh123",
+        "subject": "Database Management",
+        "salary": 62000
+    },
+    {
+        "person_id": "T54",
+        "name": "Pooja Sharma",
+        "age": 29,
+        "gender": "Female",
+        "mobile": "9654321098",
+        "password": "pooja123",
+        "subject": "Operating Systems",
+        "salary": 48000
+    },
+    {
+        "person_id": "T55",
+        "name": "Vikram Patel",
+        "age": 38,
+        "gender": "Male",
+        "mobile": "9543210987",
+        "password": "vikram123",
+        "subject": "Computer Networks",
+        "salary": 60000
+    }
+]

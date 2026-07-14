@@ -1,0 +1,252 @@
+[
+    {
+        "person_id": "S501",
+        "name": "Rahul Sharma",
+        "age": 20,
+        "gender": "Male",
+        "mobile": "9876543210",
+        "password": "rahul123",
+        "course": "BCA",
+        "semester": 3,
+        "subject_marks": {
+            "Python": 85,
+            "Java": 90,
+            "DBMS": 88,
+            "OS": 80,
+            "CN": 92
+        },
+        "attendance": {
+            "present": 42,
+            "total_classes": 50
+        },
+        "fee": {
+            "amount": 50000,
+            "paid": true
+        }
+    },
+    {
+        "person_id": "S502",
+        "name": "Priya Singh",
+        "age": 21,
+        "gender": "Female",
+        "mobile": "9123456789",
+        "password": "priya123",
+        "course": "BCA",
+        "semester": 3,
+        "subject_marks": {
+            "Python": 95,
+            "Java": 91,
+            "DBMS": 89,
+            "OS": 94,
+            "CN": 90
+        },
+        "attendance": {
+            "present": 48,
+            "total_classes": 50
+        },
+        "fee": {
+            "amount": 50000,
+            "paid": false
+        }
+    },
+    {
+        "person_id": "S503",
+        "name": "Aman Verma",
+        "age": 19,
+        "gender": "Male",
+        "mobile": "9988776655",
+        "password": "aman123",
+        "course": "BTECH",
+        "semester": 2,
+        "subject_marks": {
+            "Python": 72,
+            "Java": 68,
+            "DBMS": 75,
+            "OS": 70,
+            "CN": 74
+        },
+        "attendance": {
+            "present": 44,
+            "total_classes": 50
+        },
+        "fee": {
+            "amount": 50000,
+            "paid": true
+        }
+    },
+    {
+        "person_id": "S504",
+        "name": "Neha Gupta",
+        "age": 22,
+        "gender": "Female",
+        "mobile": "9876501234",
+        "password": "neha123",
+        "course": "MCA",
+        "semester": 1,
+        "subject_marks": {
+            "Python": 98,
+            "Java": 96,
+            "DBMS": 95,
+            "OS": 97,
+            "CN": 99
+        },
+        "attendance": {
+            "present": 50,
+            "total_classes": 50
+        },
+        "fee": {
+            "amount": 50000,
+            "paid": true
+        }
+    },
+    {
+        "person_id": "S505",
+        "name": "Rohit Kumar",
+        "age": 20,
+        "gender": "Male",
+        "mobile": "9765432109",
+        "password": "rohit123",
+        "course": "BBA",
+        "semester": 4,
+        "subject_marks": {
+            "Python": 55,
+            "Java": 60,
+            "DBMS": 58,
+            "OS": 62,
+            "CN": 57
+        },
+        "attendance": {
+            "present": 35,
+            "total_classes": 50
+        },
+        "fee": {
+            "amount": 50000,
+            "paid": false
+        }
+    },
+    {
+        "person_id": "S506",
+        "name": "Sneha Patel",
+        "age": 21,
+        "gender": "Female",
+        "mobile": "9654321098",
+        "password": "sneha123",
+        "course": "MBA",
+        "semester": 2,
+        "subject_marks": {
+            "Python": 81,
+            "Java": 79,
+            "DBMS": 84,
+            "OS": 80,
+            "CN": 83
+        },
+        "attendance": {
+            "present": 46,
+            "total_classes": 50
+        },
+        "fee": {
+            "amount": 50000,
+            "paid": true
+        }
+    },
+    {
+        "person_id": "S507",
+        "name": "Vikas Yadav",
+        "age": 23,
+        "gender": "Male",
+        "mobile": "9543210987",
+        "password": "vikas123",
+        "course": "MSC",
+        "semester": 3,
+        "subject_marks": {
+            "Python": 42,
+            "Java": 38,
+            "DBMS": 45,
+            "OS": 40,
+            "CN": 41
+        },
+        "attendance": {
+            "present": 28,
+            "total_classes": 50
+        },
+        "fee": {
+            "amount": 50000,
+            "paid": false
+        }
+    },
+    {
+        "person_id": "S508",
+        "name": "Pooja Mishra",
+        "age": 20,
+        "gender": "Female",
+        "mobile": "9432109876",
+        "password": "pooja123",
+        "course": "BSC",
+        "semester": 5,
+        "subject_marks": {
+            "Python": 88,
+            "Java": 86,
+            "DBMS": 90,
+            "OS": 91,
+            "CN": 89
+        },
+        "attendance": {
+            "present": 47,
+            "total_classes": 50
+        },
+        "fee": {
+            "amount": 50000,
+            "paid": true
+        }
+    },
+    {
+        "person_id": "S509",
+        "name": "Arjun Mehta",
+        "age": 22,
+        "gender": "Male",
+        "mobile": "9321098765",
+        "password": "arjun123",
+        "course": "MTECH",
+        "semester": 2,
+        "subject_marks": {
+            "Python": 67,
+            "Java": 71,
+            "DBMS": 69,
+            "OS": 73,
+            "CN": 70
+        },
+        "attendance": {
+            "present": 40,
+            "total_classes": 50
+        },
+        "fee": {
+            "amount": 50000,
+            "paid": true
+        }
+    },
+    {
+        "person_id": "S510",
+        "name": "Kavya Joshi",
+        "age": 19,
+        "gender": "Female",
+        "mobile": "9210987654",
+        "password": "kavya123",
+        "course": "BCA",
+        "semester": 1,
+        "subject_marks": {
+            "Python": 76,
+            "Java": 82,
+            "DBMS": 79,
+            "OS": 81,
+            "CN": 78
+        },
+        "attendance": {
+            "present": 43,
+            "total_classes": 50
+        },
+        "fee": {
+            "amount": 50000,
+            "paid": false
+        }
+    }
+]

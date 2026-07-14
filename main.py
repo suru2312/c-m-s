@@ -1,9 +1,9 @@
 #================================ IMPORTS ====================================
 import os
 
-import sample_data
+# import sample_data
+from file_handler import load_all, save_all
 
-# import time
 from database import students, teachers, admins, principal
 from person import Person, Student, Teacher, Admin, Principal
 from college import College
@@ -36,13 +36,17 @@ def pause():
 
 def login():
     print_header("LOGIN PAGE")
+    print("[Enter 'QUIT' for Exiting the program.]".center(60))
     person_id = input("Enter ID         : ").strip().upper()
-    password = input("Enter Password   : ").strip()
-    if not person_id:
-        raise InvalidInput("ID cannot be empty.")
-    if not password:
-        raise InvalidInput("Password cannot be empty.")
-    return authenticate(person_id, password)
+    if not person_id == "QUIT":
+        password = input("Enter Password   : ").strip()
+        if not person_id:
+            raise InvalidInput("ID cannot be empty.")
+        if not password:
+            raise InvalidInput("Password cannot be empty.")
+        return authenticate(person_id, password)
+    else:
+        return "EXIT-101"
 
 def authenticate(person_id, password):
     person_id = person_id.strip().upper()
@@ -344,12 +348,20 @@ def principal_dashboard(principal):
 #================================ MAIN =======================================
 
 def main():
+
+    load_all()
     
     while True:
-        
         welcome_screen()
         try:
             user = login()
+            if user == "EXIT-101":
+                os.system("clear")
+                print("=" * 60)
+                print("THANKYOU!".center(60))
+                print("=" * 60)
+                save_all()
+                break
         except InvalidInput as e:
             print(e)
             pause()
@@ -370,5 +382,7 @@ def main():
         else:
             print("\nInvalid ID or Password!")
             pause()
+        
+        save_all()
 
 main()

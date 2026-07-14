@@ -1,0 +1,18 @@
+[
+    {
+        "person_id": "A1",
+        "name": "Suraj Sharma",
+        "age": 23,
+        "gender": "Male",
+        "mobile": "9876543201",
+        "password": "admin123"
+    },
+    {
+        "person_id": "A2",
+        "name": "Anjali Verma",
+        "age": 30,
+        "gender": "Female",
+        "mobile": "9876543202",
+        "password": "anjali123"
+    }
+]
