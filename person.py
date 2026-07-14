@@ -34,8 +34,10 @@ class Person:
         
         if len(name.strip()) < 3:
             raise InvalidInput("Name must contain at least 3 characters.")
-        if not all(ch.isalpha() or ch.isspace() for ch in name):
-            raise InvalidInput("Name can contain only alphabets and spaces.")
+        if name.count(".") > 2:
+            raise InvalidInput("Name can contain a maximum of 2 dots.")
+        if not all(ch.isalpha() or ch.isspace() or ch == "." for ch in name):
+            raise InvalidInput("Name can contain only alphabets, spaces, and up to 2 dots.")
         self.name = name.strip().title()
         
         if not (MIN_AGE <= age <= MAX_AGE):
