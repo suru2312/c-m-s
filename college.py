@@ -1,41 +1,17 @@
 #================================ IMPORTS ====================================
 
-from person import Student
+from person import Student, Teacher, Admin
+
 
 #================================ LIBRARY ====================================
 
 class Library:
 
     def issue_book(self, student, book_name):
-        print(f"\nBook '{book_name}' issued to {student.name}.")
+        print(f"\n'{book_name}' has been issued to {student.name}.")
 
     def return_book(self, student, book_name):
-        print(f"\nBook '{book_name}' returned by {student.name}.")
-
-
-#================================ ACCOUNTS ====================================
-
-class Accounts:
-
-    def collect_fee(self, student):
-        if student.fee["paid"]:
-            print(f"\n{student.name} has already paid the fee.")
-        else:
-            student.fee["paid"] = True
-            print(f"\n₹{student.fee['amount']} fee collected successfully.")
-
-    def pending_fee(self, students):
-        print("\nPending Fee Students\n")
-
-        found = False
-
-        for student in students.values():
-            if not student.fee["paid"]:
-                found = True
-                print(f"{student.person_id} - {student.name}")
-
-        if not found:
-            print("No Pending Fees.")
+        print(f"\n'{book_name}' has been returned by {student.name}.")
 
 
 #================================ CLASSROOM ====================================
@@ -54,16 +30,20 @@ class Classroom:
             "BBA": "Room 402"
         }
 
-    def allot_room(self, student):
+    def view_classroom(self, student):
         room = self.rooms.get(student.course, "Not Assigned")
 
-        print("\nClassroom Details")
+        print("\n" + "=" * 50)
+        print("CLASSROOM DETAILS".center(50))
+        print("=" * 50)
         print(f"Student : {student.name}")
         print(f"Course  : {student.course}")
         print(f"Room    : {room}")
 
     def display_rooms(self):
-        print("\nAvailable Classrooms\n")
+        print("\n" + "=" * 50)
+        print("AVAILABLE CLASSROOMS".center(50))
+        print("=" * 50)
 
         for course, room in self.rooms.items():
             print(f"{course:<10} : {room}")
@@ -79,12 +59,4 @@ class College:
 
         # Composition
         self.library = Library()
-        self.accounts = Accounts()
         self.classroom = Classroom()
-
-    def display_details(self):
-        print("=" * 60)
-        print(self.name.center(60))
-        print("=" * 60)
-
-        print(f"Total Students : {Student.total_students}")

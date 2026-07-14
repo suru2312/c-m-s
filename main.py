@@ -6,6 +6,7 @@ import sample_data
 # import time
 from database import students, teachers, admins, principal
 from person import Person, Student, Teacher, Admin, Principal
+from college import College
 from exceptions import (
     InvalidAgeError, 
     InvalidMobileError,
@@ -13,6 +14,8 @@ from exceptions import (
     InvalidSubjectMarksError,
     InvalidInput
 )
+
+college = College("Bridgefix College Management System")
 
 #================================ METHODS ====================================
 
@@ -26,7 +29,7 @@ def print_header(title):
     print("=" * 60)
 
 def welcome_screen():
-    print_header("WELCOME TO THE COLLEGE MANAGEMENT SYSTEM")
+    print_header(college.name)
 
 def pause():
     input("\nPress ENTER to Continue...")
@@ -84,7 +87,10 @@ def student_dashboard(student):
         print("2. View Attendance")
         print("3. Pay Fee")
         print("4. Change password")
-        print("5. Logout")
+        print("5. View Classroom")
+        print("6. Issue Book")
+        print("7. Return Book")
+        print("8. Logout")
         print()
         user_choice = input("Enter Choice : ")
         if user_choice == "1":
@@ -116,6 +122,19 @@ def student_dashboard(student):
                 print(e)
             pause()
         elif user_choice == "5":
+            college.classroom.view_classroom(student)
+            pause()
+        elif user_choice == "6":
+            print()
+            book = input("Enter Book Name : ")
+            college.library.issue_book(student, book)
+            pause()
+        elif user_choice == "7":
+            print()
+            book = input("Enter Book Name : ")
+            college.library.return_book(student, book)
+            pause()
+        elif user_choice == "8":
             student.logout()
             pause()
             break
@@ -134,7 +153,8 @@ def teacher_dashboard(teacher):
         print("2. Update Marks")
         print("3. Take Attendance")
         print("4. Change password")
-        print("5. Logout")
+        print("5. View Classrooms")
+        print("6. Logout")
         print()
         user_choice = input("Enter Choice : ")
         if user_choice == "1":
@@ -174,6 +194,9 @@ def teacher_dashboard(teacher):
                 print(e)
             pause()
         elif user_choice == "5":
+            college.classroom.display_rooms()
+            pause()
+        elif user_choice == "6":
             teacher.logout()
             pause()
             break
@@ -299,6 +322,7 @@ def principal_dashboard(principal):
             pause()
         elif user_choice == "8":
             principal.college_summary(students, teachers, admins)
+            print("=" * 50)
             pause()
         elif user_choice == "9":
             print()
@@ -324,8 +348,6 @@ def main():
     while True:
         
         welcome_screen()
-        pause()
-
         try:
             user = login()
         except InvalidInput as e:

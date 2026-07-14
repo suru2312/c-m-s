@@ -873,7 +873,10 @@ class Principal(Person):
         print("=" * 60)
         print(table)
     
-    def college_summary(self, students):
+    def college_summary(self, students, teachers, admins):
+        if not students:
+            print("\nNo Students Found!")
+            return
         total_fee = sum(student.fee["amount"] for student in students.values())
         collected_fee = sum(
             student.fee["amount"]
@@ -881,12 +884,17 @@ class Principal(Person):
             if student.fee["paid"]
         )
         pending_fee = total_fee - collected_fee
+        average_percentage = round(sum(student.calculate_percentage() for student in students.values()) / len(students),2)
         print("\n" + "=" * 60)
         print("COLLEGE SUMMARY".center(60))
         print("=" * 60)
-        print(f"Total Students      : {Student.total_students}")
-        print(f"Total Teachers      : {Teacher.total_teachers}")
-        print(f"Total Admins        : {Admin.total_admin}")
-        print(f"Average Percentage  : {round(sum(student.calculate_percentage() for student in students.values())/len(students),2)}%")
+        print(f"College Name        : Bridgefix College Management System")
+        print(f"Total Students      : {len(students)}")
+        print(f"Total Teachers      : {len(teachers)}")
+        print(f"Total Admins        : {len(admins)}")
+        print(f"Principal           : 1")
+        print("-" * 60)
+        print(f"Average Percentage  : {average_percentage}%")
         print(f"Fee Collected       : ₹{collected_fee}")
         print(f"Fee Pending         : ₹{pending_fee}")
+        print("=" * 60)
