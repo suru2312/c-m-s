@@ -56,7 +56,7 @@ def authenticate(person_id, password):
     password = password.strip()
     if person_id.startswith("S"):
         student = students.get(person_id)
-        if student:
+        if student is not None:
             if student.verify_login(person_id, password):
                 return student
     elif person_id.startswith("T"):
@@ -380,7 +380,7 @@ def main():
             pause()
             continue
 
-        if user:
+        if user is not None:
             if isinstance(user, Student):
                 student_dashboard(user)
 

@@ -50,7 +50,8 @@ def load_students():
             item["course"],
             item["semester"]
         )
-        student.subject_marks = item["subject_marks"]
+        if item["subject_marks"]:
+            student.subject_marks = item["subject_marks"]
         student.attendance = item["attendance"]
         student.fee = item["fee"]
         students[student.person_id] = student
